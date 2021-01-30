@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,18 +30,38 @@ use Illuminate\Support\Facades\Route;
 //Route::post('/tasks/{id}/delete', function($id) { echo "タスク削除 (id: {$id})"; })->name('tasks.delete');
 
 
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/', 'TaskController@showIndexView')->name('tasks.showIndex');
+    Route::get('/categories/create', 'CategoryController@showCreateView')->name('categories.showCreate');
+    Route::get('/categories/{id}/edit', 'CategoryController@showEditView')->name('categories.showEdit');
+    Route::post('/categories/create', 'CategoryController@create')->name('categories.create');
+    Route::post('/categories/{id}/update', 'CategoryController@update')->name('categories.update');
+    Route::post('/categories/{id}/delete', 'CategoryController@delete')->name('categories.delete');
+    Route::get('/categories/{id}/tasks/create', 'TaskController@showCreateView')->name('tasks.showCreate');
+    Route::get('/tasks/{id}/edit', 'TaskController@showEditView')->name('tasks.showEdit');
+    Route::post('/categories/{id}/tasks/create', 'TaskController@create')->name('tasks.create');
+    Route::post('/tasks/{id}/update', 'TaskController@update')->name('tasks.update');
+    Route::post('/tasks/{id}/delete', 'TaskController@delete')->name('tasks.delete');
+});
 
-Route::get('/', 'TaskController@showIndexView')->name('tasks.showIndex');
-Route::get('/categories/create', 'CategoryController@showCreateView')->name('categories.showCreate');
-Route::get('/categories/{id}/edit', 'CategoryController@showEditView')->name('categories.showEdit');
-Route::post('/categories/create', 'CategoryController@create')->name('categories.create');
-Route::post('/categories/{id}/update', 'CategoryController@update')->name('categories.update');
-Route::post('/categories/{id}/delete', 'CategoryController@delete')->name('categories.delete');
-Route::get('/categories/{id}/tasks/create', 'TaskController@showCreateView')->name('tasks.showCreate');
-Route::get('/tasks/{id}/edit', 'TaskController@showEditView')->name('tasks.showEdit');
-Route::post('/categories/{id}/tasks/create', 'TaskController@create')->name('tasks.create');
-Route::post('/tasks/{id}/update', 'TaskController@update')->name('tasks.update');
-Route::post('/tasks/{id}/delete', 'TaskController@delete')->name('tasks.delete');
+// 一旦こうする
+//Route::get('/login', function() {return view('auth.login');})->name('auth.showLogin');
+//Route::post('/login', function() {echo "Login";})->name('auth.login');
+//Route::post('/logout', function() {echo "Logout";})->name('auth.logout');
+//Route::get('/register', function() {return view('auth.register');})->name('auth.showRegister');
+//Route::post('/register', function() {echo "Register";})->name('auth.register');
+
+// 次にこうする
+
+Route::group(['middleware' => ['guest']], function() {
+    Route::get('/login', 'AuthController@showLoginForm')->name('auth.showLogin');
+});
+
+Route::post('/login', 'AuthController@login')->name('auth.login');
+Route::post('/logout', 'AuthController@logout')->name('auth.logout');
+Route::get('/register', 'UserController@showRegistrationForm')->name('auth.showRegister');
+Route::post('/register', 'UserController@register')->name('auth.register');
+
 
 
 

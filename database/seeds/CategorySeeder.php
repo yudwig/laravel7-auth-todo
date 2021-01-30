@@ -11,8 +11,10 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Category::class, 3)->create()->each(function($category) {
-            $category->save();
+        App\User::all()->each(function($user) {
+            factory(App\Category::class, 3)->create(['user_id' => $user->id])->each(function($category) {
+                $category->save();
+            });
         });
     }
 }
